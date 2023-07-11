@@ -6,12 +6,6 @@ import Notification from '../Notification';
 const { Component } = require('react');
 
 class Feedback extends Component {
-  constructor() {
-    super();
-
-    this.totalCount = 0;
-  }
-
   state = {
     good: 0,
     neutral: 0,
@@ -22,26 +16,29 @@ class Feedback extends Component {
     this.setState(prevState => ({
       [feedbackType]: prevState[feedbackType] + 1,
     }));
-    this.countTotalFeedback();
+    this.getTotalFeedbackCount();
   };
 
-  countTotalFeedback = () => {
-    this.totalCount += 1;
+  getTotalFeedbackCount = () => {
+    const { good, neutral, bad } = this.state;
+    return good + neutral + bad;
   };
 
   countPositiveFeedbackPercentage = () => {
     const { good } = this.state;
+    const totalCount = this.getTotalFeedbackCount();
 
-    if (this.totalCount === 0) {
+    if (totalCount === 0) {
       return 0;
     }
 
-    return Math.round((good * 100) / this.totalCount);
+    return Math.round((good * 100) / totalCount);
   };
 
   render() {
     const { good, neutral, bad } = this.state;
     const optionssArr = Object.keys(this.state);
+    const totalCount = this.getTotalFeedbackCount();
 
     return (
       <>
@@ -53,13 +50,13 @@ class Feedback extends Component {
         </Section>
 
         <Section title={'Statistics'}>
-          {this.totalCount !== 0 ? (
+          {totalCount !== 0 ? (
             <Statistics
               good={good}
               neutral={neutral}
               bad={bad}
-              totalCount={this.totalCount}
-              positivePercentage={this.countPositiveFeedbackPercentage}
+              totalCount={this.getTotalFeedbackCount()}
+              positivePercentage={this.countPositiveFeedbackPercentage()}
             />
           ) : (
             <Notification message={'There is no feedback!'} />
